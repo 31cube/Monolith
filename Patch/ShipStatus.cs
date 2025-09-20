@@ -13,7 +13,6 @@ public static class CaseCase
     private static bool OxygenCache;
     private static bool CommsCache;
     private static bool LightsCache;
-    private static bool BrokenLightsCache;
     private static bool DoorsCache;
     private static bool BreakVentsCache;
     private static float NextVentTime = 0f;
@@ -37,10 +36,9 @@ public static class CaseCase
             Toggle.Reactor = false;
             Toggle.Comms = false;
             Toggle.Lights = false;
-            Toggle.BrokenLights = false;
             Toggle.Doors = false;
             Toggle.BreakVents = false;
-            ReactorCache = OxygenCache = CommsCache = LightsCache = BrokenLightsCache = DoorsCache = BreakVentsCache = false;
+            ReactorCache = OxygenCache = CommsCache = LightsCache = DoorsCache = BreakVentsCache = false;
             LastMap = null;
             OxygenNotified = ReactorNotified = CommsNotified = LightsNotified = DoorsNotified = VentsNotified = false;
             return;
@@ -53,7 +51,6 @@ public static class CaseCase
             ReactorCache = Toggle.Reactor;
             CommsCache = Toggle.Comms;
             LightsCache = Toggle.Lights;
-            BrokenLightsCache = Toggle.BrokenLights;
             DoorsCache = Toggle.Doors;
             BreakVentsCache = Toggle.BreakVents;
         };
@@ -168,40 +165,59 @@ public static class CaseCase
         if (Systems[SystemTypes.Comms] != null)
         {
             var CommObj = Systems[SystemTypes.Comms];
-            bool Handled = false;
-            var CommHq = CommObj.Cast<HqHudSystemType>();
+            bool handled = false;
             if (Toggle.Comms != CommsCache)
             {
                 __instance.RpcUpdateSystem(SystemTypes.Comms, Toggle.Comms ? FlagSab : FlagRestore);
                 CommsCache = Toggle.Comms;
                 CommsNotified = false;
             };
-            if (CommHq != null)
+            if (CommObj != null)
             {
-                Toggle.Comms = CommsCache = CommHq.IsActive;
-                Handled = true;
-            };
-            if (!Handled)
-            {
-                var CommHud = CommObj.Cast<HudOverrideSystemType>();
-                if (Toggle.Comms != CommsCache)
+                var type = CommObj.GetType();
+                var isActiveProp = type.GetProperty("IsActive");
+                if (isActiveProp != null)
                 {
-                    __instance.RpcUpdateSystem(SystemTypes.Comms, Toggle.Comms ? FlagSab : FlagRestore);
-                    CommsCache = Toggle.Comms;
-                    CommsNotified = false;
+                    var val = isActiveProp.GetValue(CommObj);
+                    if (val is bool b)
+                    {
+                        Toggle.Comms = CommsCache = b;
+                        handled = true;
+                    };
                 };
-                if (CommHud != null)
+                if (!handled)
                 {
-                    Toggle.Comms = CommsCache = CommHud.IsActive;
-                    Handled = true;
+                    try
+                    {
+                        var CommHq = CommObj.Cast<HqHudSystemType>();
+                        if (CommHq != null)
+                        {
+                            Toggle.Comms = CommsCache = CommHq.IsActive;
+                            handled = true;
+                        };
+                    }
+                    catch (InvalidCastException) { };
                 };
-            };
-            if (!Handled)
-            {
-                string RuntimeTypeName = CommObj?.GetType().Name;
-                HudManager.Instance.Notifier.AddDisconnectMessage("Unknown Comms system type: " + RuntimeTypeName);
-                Toggle.Comms = false;
-                CommsCache = false;
+                if (!handled)
+                {
+                    try
+                    {
+                        var CommHud = CommObj.Cast<HudOverrideSystemType>();
+                        if (CommHud != null)
+                        {
+                            Toggle.Comms = CommsCache = CommHud.IsActive;
+                            handled = true;
+                        };
+                    }
+                    catch (InvalidCastException) { };
+                };
+                if (!handled)
+                {
+                    string runtimeTypeName = type?.Name;
+                    HudManager.Instance.Notifier.AddDisconnectMessage("Unknown Comms system type: " + runtimeTypeName);
+                    Toggle.Comms = false;
+                    CommsCache = false;
+                };
             };
         }
         else
@@ -217,16 +233,23 @@ public static class CaseCase
                 Toggle.Comms = CommsCache;
             };
         };
-        if (Toggle.BrokenLights)
+        if (Toggle.Lights)
         {
-            if (Toggle.BrokenLights != BrokenLightsCache)
+            if (Toggle.Lights != LightsCache)
             {
                 if (Systems[SystemTypes.Electrical] != null)
                 {
-                    __instance.RpcUpdateSystem(SystemTypes.Electrical, 69);
-                    BrokenLightsCache = Toggle.BrokenLights;
-                    LightsCache = false;
-                    Toggle.Lights = false;
+                    var SwitchSystemVar = Systems[SystemTypes.Electrical].Cast<SwitchSystem>();
+                    byte ByteMask = 4;
+                    for (int I = 0; I < 5; I++)
+                    {
+                        if (BoolRange.Next(0.5f))
+                        {
+                            ByteMask |= (byte)(1 << I);
+                        };
+                    };
+                    __instance.RpcUpdateSystem(SystemTypes.Electrical, (byte)(ByteMask | FlagSab));
+                    LightsCache = Toggle.Lights;
                     LightsNotified = false;
                 }
                 else
@@ -236,53 +259,8 @@ public static class CaseCase
                         HudManager.Instance.Notifier.AddDisconnectMessage("Electrical not present on " + Map);
                         LightsNotified = true;
                     };
-                    Toggle.BrokenLights = false;
-                    BrokenLightsCache = false;
-                };
-            };
-        };
-        if (Toggle.Lights)
-        {
-            if (Toggle.Lights != LightsCache)
-            {
-                if (Toggle.BrokenLights)
-                {
-                    HudManager.Instance.Notifier.AddDisconnectMessage("Broken and Normal Lights cannot be combined.");
                     Toggle.Lights = false;
                     LightsCache = false;
-                }
-                else
-                {
-                    if (Systems[SystemTypes.Electrical] != null)
-                    {
-                        var SwitchSystemVar = Systems[SystemTypes.Electrical].Cast<SwitchSystem>();
-                        byte ByteMask = 4;
-                        for (int I = 0; I < 5; I++)
-                        {
-                            if (BoolRange.Next(0.5f))
-                            {
-                                ByteMask |= (byte)(1 << I);
-                            };
-                        };
-                        __instance.RpcUpdateSystem(SystemTypes.Electrical, (byte)(ByteMask | FlagSab));
-                        LightsCache = Toggle.Lights;
-                        if (LightsCache)
-                        {
-                            BrokenLightsCache = false;
-                            Toggle.BrokenLights = false;
-                        };
-                        LightsNotified = false;
-                    }
-                    else
-                    {
-                        if (!LightsNotified)
-                        {
-                            HudManager.Instance.Notifier.AddDisconnectMessage("Electrical not present on " + Map);
-                            LightsNotified = true;
-                        };
-                        Toggle.Lights = false;
-                        LightsCache = false;
-                    };
                 };
             };
             if (Systems[SystemTypes.Electrical] != null)
