@@ -1,4 +1,4 @@
-﻿using AmongUs.Data;
+using AmongUs.Data;
 using UnityEngine;
 using UnityEngine.Analytics;
 using System;
@@ -11,7 +11,13 @@ public class Blocker : MonoBehaviour
     public void Load()
     {
         Analytics.enabled = false;
+        Analytics.enabledInternal = false;
         Analytics.deviceStatsEnabled = false;
+        Analytics.deviceStatsEnabledInternal = false;
+        Analytics.limitUserTracking = true;
+        Analytics.limitUserTrackingInternal = true;
+        Analytics.initializeOnStartup = false;
+        Analytics.initializeOnStartupInternal = false;
         PerformanceReporting.enabled = false;
     }
 };
