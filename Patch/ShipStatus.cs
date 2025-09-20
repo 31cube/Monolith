@@ -32,7 +32,7 @@ public static class PShipStatus
         var (Map, Mode) = Util.GameInfo();
         if (Toggle.ReportBody)
         {
-            Util.ReportBody(PlayerControl.LocalPlayer.Data);
+            //Cheat.ReportBody();
             Toggle.ReportBody = false;
         };
         if (string.Equals(Map, "None", StringComparison.OrdinalIgnoreCase))
