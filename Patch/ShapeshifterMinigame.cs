@@ -5,10 +5,11 @@ using Il2CppSystem.Collections.Generic;
 using Monolith;
 using UnityEngine;
 
+/*
 [HarmonyPatch(typeof(ShapeshifterMinigame), nameof(ShapeshifterMinigame.Begin))]
 public static class PShapeshifterMinigame
 {
-    public static bool Postfix(ShapeshifterMinigame __instance)
+    public static bool Prefix(ShapeshifterMinigame __instance)
     {
         if (Util.PPMActive)
         {
@@ -43,3 +44,31 @@ public static class PShapeshifterMinigame
         return true;
     }
 };
+
+[HarmonyPatch(typeof(ShapeshifterPanel), nameof(ShapeshifterPanel.SetPlayer))]
+public static class PShapeshifterPanel
+{
+    public static bool Prefix(ShapeshifterPanel __instance, int index, NetworkedPlayerInfo playerInfo, Il2CppSystem.Action onShift)
+    {
+        if (Util.PPMActive)
+        {
+            __instance.shapeshift = onShift;
+            __instance.PlayerIcon.SetFlipX(false);
+            __instance.PlayerIcon.ToggleName(false);
+            SpriteRenderer[] componentsInChildren = __instance.GetComponentsInChildren<SpriteRenderer>();
+            for (int i = 0; i < componentsInChildren.Length; i++)
+            {
+                componentsInChildren[i].material.SetInt(PlayerMaterial.MaskLayer, index + 2);
+            };
+            __instance.PlayerIcon.SetMaskLayer(index + 2);
+            __instance.PlayerIcon.UpdateFromEitherPlayerDataOrCache(playerInfo, PlayerOutfitType.Default, PlayerMaterial.MaskType.ComplexUI, false, null);
+            __instance.LevelNumberText.text = ProgressionManager.FormatVisualLevel(playerInfo.PlayerLevel);
+            __instance.NameText.text = playerInfo.PlayerName;
+            DataManager.Settings.Accessibility.OnColorBlindModeChanged += (Il2CppSystem.Action)__instance.SetColorblindText;
+            __instance.SetColorblindText();
+            return false;
+        };
+        return true;
+    }
+};
+*/
