@@ -36,7 +36,7 @@ public class Util
         };
     }
 
-    public static NetworkedPlayerInfo CreateCustomMenuChoice(string PlayerName, NetworkedPlayerInfo.PlayerOutfit PlayerOutfit, RoleBehaviour AssignedRole = null)
+    public static NetworkedPlayerInfo CustomMenuChoice(string PlayerName, NetworkedPlayerInfo.PlayerOutfit PlayerOutfit, RoleBehaviour AssignedRole = null)
     {
         var PlayerInfo = Object.Instantiate(GameData.Instance.PlayerInfoPrefab);
         PlayerOutfit.PlayerName = PlayerName;
