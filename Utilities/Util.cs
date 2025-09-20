@@ -8,35 +8,32 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using static Rewired.Data.UserDataStore_PlayerPrefs.ControllerAssignmentSaveInfo;
 
 namespace Monolith;
 public class Util
 {
-    public static ShapeshifterMinigame PPM;
-    public static List<NetworkedPlayerInfo> PlayerList;
-    public static bool Active = false;
-    public static Il2CppSystem.Action ILAction;
+    /*public static ShapeshifterMinigame PPM;
+    public static List<NetworkedPlayerInfo> PPMPlayerList;
+    public static Il2CppSystem.Action PPMAction;
+    public static NetworkedPlayerInfo PPMTarget;
+    public static bool PPMActive;
 
     public static void PlayerPickerMenu(List<NetworkedPlayerInfo> List, Il2CppSystem.Action Action)
     {
-        if (!Active)
+        if (!Util.PPMActive)
         {
-            Active = true;
-            PlayerList = List;
-            ILAction = Action;
-            var PPM = Object.Instantiate(
-                RoleManager.Instance.AllRoles
-                    .FirstOrDefault(r => r && r.Role == RoleTypes.Shapeshifter)
-                    .Cast<ShapeshifterRole>(),
-                GameData.Instance.transform
-            ).ShapeshifterMenu;
+            Util.PPMActive = true;
+            PPMPlayerList = List;
+            PPMAction = Action;
+            var PPM = Object.Instantiate(RoleManager.Instance.AllRoles.FirstOrDefault(r => r && r.Role == RoleTypes.Shapeshifter).Cast<ShapeshifterRole>(),GameData.Instance.transform).ShapeshifterMenu;
             PPM.transform.SetParent(Camera.main.transform, false);
             PPM.transform.localPosition = new Vector3(0f, 0f, -50f);
             PPM.Begin(null);
         };
     }
 
-    public static NetworkedPlayerInfo CustomMenuChoice(string PlayerName, NetworkedPlayerInfo.PlayerOutfit PlayerOutfit, RoleBehaviour AssignedRole = null)
+    public static NetworkedPlayerInfo CreateCustomMenuChoice(string PlayerName, NetworkedPlayerInfo.PlayerOutfit PlayerOutfit, RoleBehaviour AssignedRole = null)
     {
         var PlayerInfo = Object.Instantiate(GameData.Instance.PlayerInfoPrefab);
         PlayerOutfit.PlayerName = PlayerName;
@@ -46,7 +43,7 @@ public class Util
             PlayerInfo.Role = AssignedRole;
         };
         return PlayerInfo;
-    }
+    }*/
 
     public static (string Map, string Mode) GameInfo()
     {
