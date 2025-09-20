@@ -7,7 +7,7 @@ using static Rewired.ReInput;
 using System.Reflection;
 
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.FixedUpdate))]
-public static class CaseCase
+public static class PShipStatus
 {
     private static bool ReactorCache;
     private static bool OxygenCache;
@@ -30,6 +30,11 @@ public static class CaseCase
     public static void Postfix(ShipStatus __instance)
     {
         var (Map, Mode) = Util.GameInfo();
+        if (Toggle.ReportBody)
+        {
+            Util.ReportBody(PlayerControl.LocalPlayer.Data);
+            Toggle.ReportBody = false;
+        };
         if (string.Equals(Map, "None", StringComparison.OrdinalIgnoreCase))
         {
             Toggle.Oxygen = false;
