@@ -76,13 +76,13 @@ public static class PAmongUsClient
         var Local = PlayerControl.LocalPlayer;
         if (Local != null)
         {
-            if (Toggle.ColorMix && Time.time >= NextColorTime)
+            if (Toggle.ColorChange && Time.time >= NextColorTime)
             {
                 byte ColorIndex = (byte)UnityEngine.Random.Range(1, 18);
                 Local.CmdCheckColor(ColorIndex);
                 NextColorTime = Time.time + 0.1f;
             };
-            if (Toggle.NameMix && Time.time >= NextNameTime)
+            if (Toggle.NameChange && Time.time >= NextNameTime)
             {
                 string RandomName = DestroyableSingleton<AccountManager>.Instance.GetRandomName();
                 if (!string.IsNullOrEmpty(RandomName))
