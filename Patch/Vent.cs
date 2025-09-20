@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,16 +11,16 @@ using Monolith;
 [HarmonyPatch(typeof(Vent), nameof(Vent.CanUse))]
 public static class PVent
 {
-    public static void Postfix(Vent Instance, NetworkedPlayerInfo Pc, ref bool CanUse, ref bool CouldUse, ref float Result)
+    public static void Postfix(Vent __instance, NetworkedPlayerInfo Pc, ref bool CanUse, ref bool CouldUse, ref float Result)
     {
         if (Toggle.UseVents == true)
         {
             float Number = float.MaxValue;
             PlayerControl PlayerObj = Pc.Object;
             Vector3 Center = PlayerObj.Collider.bounds.center;
-            Vector3 Position = Instance.transform.position;
+            Vector3 Position = __instance.transform.position;
             Number = Vector3.Distance(Center, Position);
-            CanUse = Number <= Instance.UsableDistance && !PhysicsHelpers.AnythingBetween(PlayerObj.Collider, Center, Position, Constants.ShipOnlyMask, false);
+            CanUse = Number <= __instance.UsableDistance && !PhysicsHelpers.AnythingBetween(PlayerObj.Collider, Center, Position, Constants.ShipOnlyMask, false);
             CouldUse = true;
             Result = Number;
         };
