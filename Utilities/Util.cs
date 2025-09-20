@@ -1,15 +1,53 @@
-﻿using AmongUs.Data.Player;
+using AmongUs.Data.Player;
 using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
 using InnerNet;
+using Sentry.Internal.Extensions;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Monolith;
 public class Util
 {
+    public static ShapeshifterMinigame PPM;
+    public static List<NetworkedPlayerInfo> PlayerList;
+    public static bool Active = false;
+    public static Il2CppSystem.Action ILAction;
+
+    public static void PlayerPickerMenu(List<NetworkedPlayerInfo> List, Il2CppSystem.Action Action)
+    {
+        if (!Active)
+        {
+            Active = true;
+            PlayerList = List;
+            ILAction = Action;
+            var PPM = Object.Instantiate(
+                RoleManager.Instance.AllRoles
+                    .FirstOrDefault(r => r && r.Role == RoleTypes.Shapeshifter)
+                    .Cast<ShapeshifterRole>(),
+                GameData.Instance.transform
+            ).ShapeshifterMenu;
+            PPM.transform.SetParent(Camera.main.transform, false);
+            PPM.transform.localPosition = new Vector3(0f, 0f, -50f);
+            PPM.Begin(null);
+        };
+    }
+
+    public static NetworkedPlayerInfo CreateCustomMenuChoice(string PlayerName, NetworkedPlayerInfo.PlayerOutfit PlayerOutfit, RoleBehaviour AssignedRole = null)
+    {
+        var PlayerInfo = Object.Instantiate(GameData.Instance.PlayerInfoPrefab);
+        PlayerOutfit.PlayerName = PlayerName;
+        PlayerInfo.Outfits[PlayerOutfitType.Default] = PlayerOutfit;
+        if (AssignedRole != null)
+        {
+            PlayerInfo.Role = AssignedRole;
+        };
+        return PlayerInfo;
+    }
+
     public static (string Map, string Mode) GameInfo()
     {
         var host = AmongUsClient.Instance?.GetHost();
