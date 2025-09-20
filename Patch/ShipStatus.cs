@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using HarmonyLib;
 using Monolith;
 using System;
@@ -28,7 +28,7 @@ public static class CaseCase
     private static bool DoorsNotified;
     private static bool VentsNotified;
 
-    public static void Postfix(ShipStatus Instance)
+    public static void Postfix(ShipStatus __instance)
     {
         var (Map, Mode) = Util.GameInfo();
         if (string.Equals(Map, "None", StringComparison.OrdinalIgnoreCase))
@@ -57,13 +57,13 @@ public static class CaseCase
             DoorsCache = Toggle.Doors;
             BreakVentsCache = Toggle.BreakVents;
         };
-        var Systems = Instance.Systems;
+        var Systems = __instance.Systems;
         bool MapHasOxygen = string.Equals(Map, "Skeld", StringComparison.OrdinalIgnoreCase) || (Systems[SystemTypes.LifeSupp] != null);
         if (MapHasOxygen)
         {
             if (Toggle.Oxygen != OxygenCache)
             {
-                Instance.RpcUpdateSystem(SystemTypes.LifeSupp, Toggle.Oxygen ? FlagSab : FlagRestore);
+                __instance.RpcUpdateSystem(SystemTypes.LifeSupp, Toggle.Oxygen ? FlagSab : FlagRestore);
                 OxygenCache = Toggle.Oxygen;
                 OxygenNotified = false;
             };
@@ -106,17 +106,17 @@ public static class CaseCase
                 {
                     if (Systems[SystemTypes.Laboratory] != null)
                     {
-                        Instance.RpcUpdateSystem(SystemTypes.Laboratory, Toggle.Reactor ? FlagSab : FlagRestore);
+                        __instance.RpcUpdateSystem(SystemTypes.Laboratory, Toggle.Reactor ? FlagSab : FlagRestore);
                     };
                 }
                 else if (MapHasAirshipReactor)
                 {
                     if (Systems[SystemTypes.HeliSabotage] != null)
                     {
-                        Instance.RpcUpdateSystem(SystemTypes.HeliSabotage, Toggle.Reactor ? FlagSab : FlagRestore);
+                        __instance.RpcUpdateSystem(SystemTypes.HeliSabotage, Toggle.Reactor ? FlagSab : FlagRestore);
                         if (!Toggle.Reactor)
                         {
-                            Instance.RpcUpdateSystem(SystemTypes.HeliSabotage, (byte)0);
+                            __instance.RpcUpdateSystem(SystemTypes.HeliSabotage, (byte)0);
                         };
                     };
                 }
@@ -124,7 +124,7 @@ public static class CaseCase
                 {
                     if (Systems[SystemTypes.Reactor] != null)
                     {
-                        Instance.RpcUpdateSystem(SystemTypes.Reactor, Toggle.Reactor ? FlagSab : FlagRestore);
+                        __instance.RpcUpdateSystem(SystemTypes.Reactor, Toggle.Reactor ? FlagSab : FlagRestore);
                     };
                 };
                 ReactorCache = Toggle.Reactor;
@@ -172,7 +172,7 @@ public static class CaseCase
             var CommHq = CommObj.Cast<HqHudSystemType>();
             if (Toggle.Comms != CommsCache)
             {
-                Instance.RpcUpdateSystem(SystemTypes.Comms, Toggle.Comms ? FlagSab : FlagRestore);
+                __instance.RpcUpdateSystem(SystemTypes.Comms, Toggle.Comms ? FlagSab : FlagRestore);
                 CommsCache = Toggle.Comms;
                 CommsNotified = false;
             };
@@ -186,7 +186,7 @@ public static class CaseCase
                 var CommHud = CommObj.Cast<HudOverrideSystemType>();
                 if (Toggle.Comms != CommsCache)
                 {
-                    Instance.RpcUpdateSystem(SystemTypes.Comms, Toggle.Comms ? FlagSab : FlagRestore);
+                    __instance.RpcUpdateSystem(SystemTypes.Comms, Toggle.Comms ? FlagSab : FlagRestore);
                     CommsCache = Toggle.Comms;
                     CommsNotified = false;
                 };
@@ -223,7 +223,7 @@ public static class CaseCase
             {
                 if (Systems[SystemTypes.Electrical] != null)
                 {
-                    Instance.RpcUpdateSystem(SystemTypes.Electrical, 69);
+                    __instance.RpcUpdateSystem(SystemTypes.Electrical, 69);
                     BrokenLightsCache = Toggle.BrokenLights;
                     LightsCache = false;
                     Toggle.Lights = false;
@@ -264,7 +264,7 @@ public static class CaseCase
                                 ByteMask |= (byte)(1 << I);
                             };
                         };
-                        Instance.RpcUpdateSystem(SystemTypes.Electrical, (byte)(ByteMask | FlagSab));
+                        __instance.RpcUpdateSystem(SystemTypes.Electrical, (byte)(ByteMask | FlagSab));
                         LightsCache = Toggle.Lights;
                         if (LightsCache)
                         {
@@ -297,7 +297,7 @@ public static class CaseCase
                             var SwitchMask = 1 << (I & 0x1F);
                             if ((SwitchSystemVar.ActualSwitches & SwitchMask) != (SwitchSystemVar.ExpectedSwitches & SwitchMask))
                             {
-                                Instance.RpcUpdateSystem(SystemTypes.Electrical, (byte)I);
+                                __instance.RpcUpdateSystem(SystemTypes.Electrical, (byte)I);
                             };
                         };
                         LightsCache = Toggle.Lights;
@@ -330,7 +330,7 @@ public static class CaseCase
                 for (int I = 0, N = AllDoors.Count; I < N; ++I)
                 {
                     var OpenableDoorVar = AllDoors[I];
-                    Instance.RpcCloseDoorsOfType(OpenableDoorVar.Room);
+                    __instance.RpcCloseDoorsOfType(OpenableDoorVar.Room);
                 };
                 DoorsCache = Toggle.Doors;
                 Toggle.Doors = false;
