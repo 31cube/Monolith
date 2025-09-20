@@ -15,5 +15,6 @@ namespace Monolith
         public static bool TeleportCursor = false;
         public static bool ColorChange = false;
         public static bool NameChange = false;
+        public static bool ReportBody = false;
     };
 };
