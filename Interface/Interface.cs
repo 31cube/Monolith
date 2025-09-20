@@ -22,7 +22,7 @@ namespace Monolith
         private TabCase CurrentTab = TabCase.Sabotage;
         private readonly List<string> Sabotages = new List<string> { "Oxygen", "Reactor", "Lights", "Comms", "Doors", "MushroomMixup" };
         private readonly List<string> Miscs = new List<string> { "UseVents", "ColorChange", "NameChange", "BreakVents" };
-        private readonly List<string> Players = new List<string>();
+        private readonly List<string> Players = new List<string> {"ReportBody"};
         private readonly int WindowId = 0xF00D;
         private static readonly Dictionary<string, FieldInfo> ToggleFieldCache = new Dictionary<string, FieldInfo>();
 
